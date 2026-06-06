@@ -1,0 +1,88 @@
+# EdutrackAI Backend
+
+EdutrackAI Backend es la API base para una plataforma orientada al seguimiento, gestion y analisis de informacion educativa. El proyecto esta construido con TypeScript sobre Node.js y esta preparado para exponer servicios HTTP, manejar autenticacion, persistir datos en PostgreSQL y soportar funcionalidades en tiempo real.
+
+El repositorio se encuentra en una etapa inicial de construccion. Ya incluye una estructura modular y utilidades reutilizables para CRUD, validacion, cifrado de campos sensibles y manejo de errores, mientras que los modulos principales de autenticacion y usuarios estan preparados para ser implementados.
+
+## Stack principal
+
+- Node.js y TypeScript como base del backend.
+- Express para la API HTTP.
+- Prisma como ORM.
+- PostgreSQL como base de datos.
+- Zod para validacion de datos.
+- Socket.IO para comunicacion en tiempo real.
+- Passport, Google OAuth y JWT para autenticacion.
+- bcrypt/bcryptjs para hashing de contrasenas.
+- AWS S3, Multer y Sharp para manejo y procesamiento de archivos.
+- pnpm como gestor de paquetes.
+
+## Enfoque de arquitectura
+
+La estructura esta pensada para crecer por modulos funcionales dentro de `src/modules`. Cada modulo puede separar sus responsabilidades en:
+
+- `routes`: definicion de endpoints.
+- `controller`: manejo de request/response.
+- `service`: logica de negocio y acceso a datos.
+- `validation`: esquemas de validacion con Zod.
+
+Ademas, el proyecto incluye helpers genericos para crear servicios, controladores y rutas CRUD de manera consistente, reduciendo repeticion en futuros modulos.
+
+## Estructura general
+
+```text
+src/
++-- app.ts
++-- router.ts
++-- socket.ts
++-- config/
++-- database/
++-- helpers/
++-- middlewares/
++-- modules/
+|   +-- auth/
+|   +-- users/
++-- public/
+```
+
+Otros directorios importantes:
+
+- `prisma/`: configuracion del esquema Prisma y futuras migraciones.
+- `docs/`: documentacion tecnica del estado actual del proyecto.
+
+## Estado actual
+
+Implementado:
+
+- Base de helpers CRUD.
+- Validaciones reutilizables con Zod.
+- Middleware de validacion para body y params.
+- Manejo centralizado de errores HTTP.
+- Cifrado y descifrado de campos sensibles.
+- Hashing de contrasenas.
+- Configuracion base de Prisma para PostgreSQL.
+
+Pendiente:
+
+- Inicializacion completa de Express.
+- Registro global de rutas.
+- Cliente Prisma compartido.
+- Modelos y migraciones Prisma.
+- Implementacion de autenticacion.
+- Implementacion de usuarios.
+- Middlewares de seguridad.
+- Scripts de desarrollo, build y pruebas.
+
+## Documentacion
+
+La documentacion tecnica inicial esta disponible en:
+
+```text
+docs/INITIAL_DOCUMENT.MD
+```
+
+Ese archivo describe con mas detalle la estructura actual, tecnologias utilizadas, responsabilidades por carpeta y recomendaciones inmediatas para continuar el desarrollo.
+
+## Licencia
+
+MIT
