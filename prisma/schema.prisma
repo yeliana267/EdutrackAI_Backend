@@ -5,8 +5,12 @@
 
 generator client {
   provider = "prisma-client"
+<<<<<<< HEAD
   output   = "../src/generated/prisma"
   previewFeatures = ["multiSchema"]
+=======
+  output   = "../generated/prisma"
+>>>>>>> a5dd418eac572ea9b0dcc9b27a4068bf86da2b41
 }
 
 datasource db {
