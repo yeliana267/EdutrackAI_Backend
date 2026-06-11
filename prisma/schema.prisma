@@ -6,10 +6,13 @@
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
+  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "postgresql
+  url= env("DATABASE_URL")
+  schema = ["system","users","academics","quizz"]
 }
 
 model User {
@@ -40,6 +43,11 @@ model User {
   studySessions   StudySessions[]
   recommendations Recommendations[]
   notifications   Notifications[]
+  @@schema("users")
+  @@schema("academics")
+  @@schema("quizz")
+  @@schema("system")
+  @@schema("auth")
 }
 
 model Roles {
@@ -51,6 +59,8 @@ model Roles {
 
   createdAt DateTime @default(now())
   updateAt  DateTime @updatedAt
+  @@schema("auth")
+
 }
 
 model AcademicProfile {
@@ -66,6 +76,8 @@ model AcademicProfile {
 
   createdAt DateTime @default(now())
   updateAt  DateTime @updatedAt
+  @@schema("users")
+
 }
 
 model Subject {
@@ -84,6 +96,7 @@ model Subject {
   studySessions   StudySessions[]
   resouces        Resouces[]
   recommendations Recommendations[]
+
 }
 
 model UserSubject {
@@ -96,6 +109,7 @@ model UserSubject {
 
   user    User    @relation(fields: [userId], references: [id])
   subject Subject @relation(fields: [subjectId], references: [id])
+  @@schema("users")
 }
 
 model Quizzies {
