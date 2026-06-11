@@ -5,18 +5,12 @@
 
 generator client {
   provider = "prisma-client"
-<<<<<<< HEAD
-  output   = "../src/generated/prisma"
-  previewFeatures = ["multiSchema"]
-=======
-  output   = "../generated/prisma"
->>>>>>> a5dd418eac572ea9b0dcc9b27a4068bf86da2b41
+  output   = "./../generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql
-  url= env("DATABASE_URL")
-  schema = ["system","users","academics","quizz"]
+  provider = "postgresql"
+  schemas  = ["users", "auth", "academic_profile", "subject", "quizz"]
 }
 
 model User {
@@ -40,18 +34,15 @@ model User {
   quizzies         Quizzies[]
   quizziesAttempts QuizAttempts[]
 
-  createdAt       DateTime          @default(now())
-  updateAt        DateTime          @updatedAt
+  createdAt       DateTime @default(now())
+  updateAt        DateTime @updatedAt
   deletedAt       DateTime?
   grades          Grades[]
   studySessions   StudySessions[]
   recommendations Recommendations[]
   notifications   Notifications[]
+
   @@schema("users")
-  @@schema("academics")
-  @@schema("quizz")
-  @@schema("system")
-  @@schema("auth")
 }
 
 model Roles {
@@ -63,8 +54,8 @@ model Roles {
 
   createdAt DateTime @default(now())
   updateAt  DateTime @updatedAt
-  @@schema("auth")
 
+  @@schema("auth")
 }
 
 model AcademicProfile {
@@ -80,8 +71,8 @@ model AcademicProfile {
 
   createdAt DateTime @default(now())
   updateAt  DateTime @updatedAt
-  @@schema("users")
 
+  @@schema("academic_profile")
 }
 
 model Subject {
@@ -94,13 +85,14 @@ model Subject {
   subject  UserSubject[]
   quizzies Quizzies[]
 
-  createdAt       DateTime          @default(now())
-  updateAt        DateTime          @updatedAt
+  createdAt       DateTime @default(now())
+  updateAt        DateTime @updatedAt
   grades          Grades[]
   studySessions   StudySessions[]
   resouces        Resouces[]
   recommendations Recommendations[]
 
+  @@schema("subject")
 }
 
 model UserSubject {
@@ -113,6 +105,7 @@ model UserSubject {
 
   user    User    @relation(fields: [userId], references: [id])
   subject Subject @relation(fields: [subjectId], references: [id])
+
   @@schema("users")
 }
 
@@ -132,7 +125,9 @@ model Quizzies {
   user    User    @relation(fields: [createBy], references: [id])
 
   quizziesAttempts QuizAttempts[]
-  question         Questions[]
+  question          Questions[]
+
+  @@schema("quizz")
 }
 
 model QuizAttempts {
@@ -149,12 +144,9 @@ model QuizAttempts {
   quizzies      Quizzies        @relation(fields: [quizId], references: [id])
   user          User            @relation(fields: [userId], references: [id])
   studenAnswers StudenAnswers[]
-}
 
-// Modelo de Preguntas 
-// Questions
-// Question Options
-// Student Answers
+  @@schema("quizz")
+}
 
 model Questions {
   id           String @id @default(uuid())
@@ -168,6 +160,8 @@ model Questions {
   quizzies        Quizzies          @relation(fields: [quizId], references: [id])
   questionOptions QuestionOptions[]
   studenAnswers   StudenAnswers[]
+
+  @@schema("quizz")
 }
 
 model QuestionOptions {
@@ -178,6 +172,8 @@ model QuestionOptions {
 
   question      Questions       @relation(fields: [questionId], references: [id])
   studenAnswers StudenAnswers[]
+
+  @@schema("quizz")
 }
 
 model StudenAnswers {
@@ -190,6 +186,8 @@ model StudenAnswers {
   quizzAttempts   QuizAttempts    @relation(fields: [quizAttemptId], references: [id])
   question        Questions       @relation(fields: [questionId], references: [id])
   questionOptions QuestionOptions @relation(fields: [selectedOptionId], references: [id])
+
+  @@schema("quizz")
 }
 
 model Grades {
@@ -204,6 +202,8 @@ model Grades {
 
   user    User    @relation(fields: [userId], references: [id])
   subject Subject @relation(fields: [subjectId], references: [id])
+
+  @@schema("academic_profile")
 }
 
 model StudySessions {
@@ -219,6 +219,8 @@ model StudySessions {
 
   user    User    @relation(fields: [userId], references: [id])
   subject Subject @relation(fields: [subjectId], references: [id])
+
+  @@schema("academic_profile")
 }
 
 model Resouces {
@@ -236,6 +238,8 @@ model Resouces {
 
   subject         Subject           @relation(fields: [subjectId], references: [id])
   recommendations Recommendations[]
+
+  @@schema("subject")
 }
 
 model Recommendations {
@@ -254,6 +258,8 @@ model Recommendations {
   user     User     @relation(fields: [userId], references: [id])
   subject  Subject  @relation(fields: [subjectId], references: [id])
   resource Resouces @relation(fields: [resourceId], references: [id])
+
+  @@schema("subject")
 }
 
 model Notifications {
@@ -267,4 +273,6 @@ model Notifications {
   createdAt  DateTime @map("created_at")
 
   user User @relation(fields: [userId], references: [id])
+
+  @@schema("users")
 }
