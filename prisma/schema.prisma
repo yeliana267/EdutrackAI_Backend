@@ -5,11 +5,12 @@
 
 generator client {
   provider = "prisma-client"
-  output   = "../generated/prisma"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
+  schemas  = ["auth", "system", "users", "academics", "quizz"]
 }
 
 model User {
@@ -40,6 +41,11 @@ model User {
   studySessions   StudySessions[]
   recommendations Recommendations[]
   notifications   Notifications[]
+  auditLogs       AuditLog[]
+  gradeChanges    GradeChange[]
+  loginHistories  LoginHistory[]
+
+  @@schema("users")
 }
 
 model Roles {
@@ -51,6 +57,8 @@ model Roles {
 
   createdAt DateTime @default(now())
   updateAt  DateTime @updatedAt
+
+  @@schema("auth")
 }
 
 model AcademicProfile {
@@ -66,6 +74,8 @@ model AcademicProfile {
 
   createdAt DateTime @default(now())
   updateAt  DateTime @updatedAt
+
+  @@schema("users")
 }
 
 model Subject {
@@ -84,6 +94,8 @@ model Subject {
   studySessions   StudySessions[]
   resouces        Resouces[]
   recommendations Recommendations[]
+
+  @@schema("system")
 }
 
 model UserSubject {
@@ -96,6 +108,8 @@ model UserSubject {
 
   user    User    @relation(fields: [userId], references: [id])
   subject Subject @relation(fields: [subjectId], references: [id])
+
+  @@schema("users")
 }
 
 model Quizzies {
@@ -115,6 +129,8 @@ model Quizzies {
 
   quizziesAttempts QuizAttempts[]
   question         Questions[]
+
+  @@schema("quizz")
 }
 
 model QuizAttempts {
@@ -131,6 +147,8 @@ model QuizAttempts {
   quizzies      Quizzies        @relation(fields: [quizId], references: [id])
   user          User            @relation(fields: [userId], references: [id])
   studenAnswers StudenAnswers[]
+
+  @@schema("quizz")
 }
 
 // Modelo de Preguntas 
@@ -150,6 +168,8 @@ model Questions {
   quizzies        Quizzies          @relation(fields: [quizId], references: [id])
   questionOptions QuestionOptions[]
   studenAnswers   StudenAnswers[]
+
+  @@schema("quizz")
 }
 
 model QuestionOptions {
@@ -160,6 +180,8 @@ model QuestionOptions {
 
   question      Questions       @relation(fields: [questionId], references: [id])
   studenAnswers StudenAnswers[]
+
+  @@schema("quizz")
 }
 
 model StudenAnswers {
@@ -172,6 +194,8 @@ model StudenAnswers {
   quizzAttempts   QuizAttempts    @relation(fields: [quizAttemptId], references: [id])
   question        Questions       @relation(fields: [questionId], references: [id])
   questionOptions QuestionOptions @relation(fields: [selectedOptionId], references: [id])
+
+  @@schema("quizz")
 }
 
 model Grades {
@@ -184,8 +208,11 @@ model Grades {
   date        DateTime
   createdAt   DateTime @default(now()) @map("created_at")
 
-  user    User    @relation(fields: [userId], references: [id])
-  subject Subject @relation(fields: [subjectId], references: [id])
+  user         User          @relation(fields: [userId], references: [id])
+  subject      Subject       @relation(fields: [subjectId], references: [id])
+  gradeChanges GradeChange[]
+
+  @@schema("academics")
 }
 
 model StudySessions {
@@ -201,6 +228,8 @@ model StudySessions {
 
   user    User    @relation(fields: [userId], references: [id])
   subject Subject @relation(fields: [subjectId], references: [id])
+
+  @@schema("academics")
 }
 
 model Resouces {
@@ -218,6 +247,8 @@ model Resouces {
 
   subject         Subject           @relation(fields: [subjectId], references: [id])
   recommendations Recommendations[]
+
+  @@schema("system")
 }
 
 model Recommendations {
@@ -236,6 +267,8 @@ model Recommendations {
   user     User     @relation(fields: [userId], references: [id])
   subject  Subject  @relation(fields: [subjectId], references: [id])
   resource Resouces @relation(fields: [resourceId], references: [id])
+
+  @@schema("academics")
 }
 
 model Notifications {
@@ -249,4 +282,53 @@ model Notifications {
   createdAt  DateTime @map("created_at")
 
   user User @relation(fields: [userId], references: [id])
+
+  @@schema("system")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String?  @map("user_id")
+  action     String
+  entityName String   @map("entity_name")
+  entityId   String?  @map("entity_id")
+  oldValues  Json?    @map("old_values")
+  newValues  Json?    @map("new_values")
+  ipAddress  String?  @map("ip_address")
+  userAgent  String?  @map("user_agent")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@schema("system")
+}
+
+model GradeChange {
+  id          String   @id @default(uuid())
+  gradeId     String   @map("grade_id")
+  changedById String   @map("changed_by_id")
+  oldValue    Decimal  @map("old_value")
+  newValue    Decimal  @map("new_value")
+  reason      String?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  grade     Grades @relation(fields: [gradeId], references: [id])
+  changedBy User   @relation(fields: [changedById], references: [id])
+
+  @@schema("academics")
+}
+
+model LoginHistory {
+  id            String   @id @default(uuid())
+  userId        String?  @map("user_id")
+  email         String
+  success       Boolean
+  failureReason String?  @map("failure_reason")
+  ipAddress     String?  @map("ip_address")
+  userAgent     String?  @map("user_agent")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@schema("auth")
 }
